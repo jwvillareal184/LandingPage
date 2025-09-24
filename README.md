@@ -1,4 +1,4 @@
-# sweet_haven
+# breeze_mall
 
 ## Project setup
 ```
