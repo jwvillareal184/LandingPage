@@ -184,6 +184,7 @@ export default {
 #contact {
   background-color: var(--color-cream); 
   border-radius: 8px;
+  overflow-x: hidden;
 }
 .contact-info {
   background: var(--color-cream);

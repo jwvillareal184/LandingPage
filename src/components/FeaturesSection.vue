@@ -35,8 +35,8 @@
       <!-- Grid of features -->
       <div v-else>
         <!-- Category Tabs + Rating Filter -->
-        <div class="d-flex justify-content-center mb-4 gap-2 flex-wrap">
-          <div class="d-flex gap-2 flex-wrap">
+        <div class="d-flex justify-content-center  mb-4 gap-2 flex-wrap">
+          <div class="d-flex gap-2 flex-wrap justify-content-center">
             <button
               v-for="cat in categories"
               :key="cat"
