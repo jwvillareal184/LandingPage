@@ -130,20 +130,26 @@
 
 <script>
 export default {
-  name: "ContactForm",
+  name: "ContactForm", // Component name
+
+  // Reactive data for form fields and submission state
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      email: "",
-      contactNumber: "",
-      title: "",
-      message: "",
-      submitted: false,
+      firstName: "",      // User's first name
+      lastName: "",       // User's last name
+      email: "",          // User's email
+      contactNumber: "",  // User's contact number
+      title: "",          // Subject/title of the message
+      message: "",        // Message content
+      submitted: false,   // Tracks whether form has been submitted
     };
   },
+
+  // Component methods
   methods: {
+    // Form submission handler
     submitForm() {
+      // Simple validation: all fields must be filled
       if (
         this.firstName &&
         this.lastName &&
@@ -152,32 +158,40 @@ export default {
         this.title &&
         this.message
       ) {
-        this.submitted = true;
+        this.submitted = true; // Mark as submitted if valid
       }
     },
   },
+
+  // Lifecycle hook: runs after component mounts
   mounted() {
+    // IntersectionObserver options
     const options = {
-      root: null, 
-      threshold: 0.2, 
+      root: null,      // Observe within viewport
+      threshold: 0.2,  // Trigger when 20% of element is visible
     };
 
+    // Create IntersectionObserver for slide animations
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("show"); // slide in
+          entry.target.classList.add("show"); // Add class to slide in
         } else {
-          entry.target.classList.remove("show"); // slide out
+          entry.target.classList.remove("show"); // Remove class to slide out
         }
       });
     }, options);
 
+    // Select elements to observe
     const left = this.$el.querySelector(".slide-left");
     const right = this.$el.querySelector(".slide-right");
+
+    // Start observing if elements exist
     if (left) observer.observe(left);
     if (right) observer.observe(right);
   }
 };
+
 </script>
 
 <style scoped>

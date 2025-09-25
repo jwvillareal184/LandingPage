@@ -205,71 +205,94 @@ import { Modal, Toast } from "bootstrap";
 let cachedProducts = null;
 
 export default {
-  name: "FeaturesSection",
+  name: "FeaturesSection", // Component name
+
+  // Reactive data for the component
   data() {
     return {
-      features: [],
-      categories: [],
-      selectedCategory: "all",
-      selectedRating: "all",
-      loading: true,
-      error: null,
-      currentPage: 1,
-      perPage: 6,
-      observer: null,
-      selectedItem: null,
-      quantity: 1,
-      modalInstance: null,
+      features: [], // List of products/features fetched from API
+      categories: [], // List of product categories for filtering
+      selectedCategory: "all", // Currently selected category filter
+      selectedRating: "all", // Currently selected rating filter
+      loading: true, // Loading state while fetching products
+      error: null, // Holds error message if API call fails
+      currentPage: 1, // Current page for pagination
+      perPage: 6, // Number of items per page
+      observer: null, // IntersectionObserver for scroll animations
+      selectedItem: null, // Item selected for modal view
+      quantity: 1, // Quantity selected for ordering
+      modalInstance: null, // Reference to Bootstrap modal instance
     };
   },
+
+  // Computed properties for filtered and paginated data
   computed: {
     filteredFeatures() {
+      // Filter by category first
       let filtered = this.selectedCategory === "all"
         ? this.features
         : this.features.filter(f => f.category === this.selectedCategory);
 
+      // Filter by rating if applicable
       if (this.selectedRating !== "all") {
-        // Rating rounding behavior: floor() to match only whole numbers
+        // Only match whole number ratings
         filtered = filtered.filter(f => Math.floor(f.rating?.rate || 0) === Number(this.selectedRating));
       }
       return filtered;
     },
+
+    // Calculate total number of pages for pagination
     totalPages() {
       return Math.ceil(this.filteredFeatures.length / this.perPage);
     },
+
+    // Return only the features for the current page
     paginatedFeatures() {
       const start = (this.currentPage - 1) * this.perPage;
       return this.filteredFeatures.slice(start, start + this.perPage);
     },
   },
+
+  // Watchers for reactive changes
   watch: {
-    selectedCategory() { this.currentPage = 1; },
-    selectedRating() { this.currentPage = 1; },
-    paginatedFeatures() { this.$nextTick(() => this.observeCards()); },
+    selectedCategory() { this.currentPage = 1; }, // Reset to page 1 when category changes
+    selectedRating() { this.currentPage = 1; },   // Reset to page 1 when rating changes
+    paginatedFeatures() { this.$nextTick(() => this.observeCards()); }, // Observe newly rendered cards
   },
+
+  // Component methods
   methods: {
+    // Go to next page
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
         this.$nextTick(() => { this.observeCards(); this.scrollToTop(); });
       }
     },
+
+    // Go to previous page
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
         this.$nextTick(() => { this.observeCards(); this.scrollToTop(); });
       }
     },
+
+    // Scroll to the first visible card
     scrollToTop() {
       const firstCard = this.$el.querySelector(".animate-card");
       if (firstCard) firstCard.scrollIntoView({ behavior: "smooth", block: "start" });
     },
+
+    // Open modal and initialize quantity
     openModal(item) {
       this.selectedItem = item;
       this.quantity = 1;
-      if (!this.modalInstance) this.modalInstance = new Modal(this.$refs.modal);
+      if (!this.modalInstance) this.modalInstance = new Modal(this.$refs.modal); // Initialize Bootstrap modal
       this.modalInstance.show();
     },
+
+    // Observe cards for scroll animations using IntersectionObserver
     observeCards() {
       if (this.observer) this.observer.disconnect();
       this.observer = new IntersectionObserver((entries) => {
@@ -278,17 +301,24 @@ export default {
           entry.target.classList.toggle("hidden", !entry.isIntersecting);
         });
       }, { threshold: 0.1 });
+
       const cards = this.$el.querySelectorAll(".animate-card");
       cards.forEach(card => this.observer.observe(card));
     },
+
+    // Fetch products from API or cache
     async fetchProducts() {
       try {
         this.loading = true;
+
+        // Use cached products if available
         if (cachedProducts) {
           this.features = cachedProducts;
         } else {
           const res = await fetch("https://fakestoreapi.com/products");
           const data = await res.json();
+
+          // Map API data to internal structure
           cachedProducts = data.map(item => {
             const rate = item.rating?.rate || 0;
             const stars = this.getStars(rate);
@@ -299,14 +329,18 @@ export default {
               image: item.image,
               price: item.price,
               rating: item.rating || { rate: 0, count: 0 },
-              showFull: false,
+              showFull: false, // For toggling description
               category: item.category,
-              stars, // cached stars
+              stars, // Precomputed stars
             };
           });
+
           this.features = cachedProducts;
         }
+
+        // Generate unique categories with "all" option
         this.categories = ["all", ...new Set(this.features.map(f => f.category))];
+
       } catch (err) {
         console.error(err);
         this.error = "Failed to load products.";
@@ -315,31 +349,43 @@ export default {
         this.$nextTick(() => this.observeCards());
       }
     },
+
+    // Increase/decrease quantity
     increaseQuantity() { this.quantity++; },
     decreaseQuantity() { if (this.quantity > 1) this.quantity--; },
+
+    // Confirm order and show toast
     confirmOrder() {
       if (this.modalInstance) this.modalInstance.hide();
       const toastEl = this.$refs.orderToast;
       const toast = new Toast(toastEl);
       toast.show();
     },
+
+    // Convert numeric rating to full/half/empty stars
     getStars(rate) {
-      // Null-safe rating
-      rate = rate || 0;
-      const fullStars = Math.floor(rate); // rounding down
+      rate = rate || 0; // Null-safe
+      const fullStars = Math.floor(rate);
       const halfStar = rate % 1 >= 0.5;
       const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
       return { full: fullStars, half: halfStar, empty: emptyStars };
     },
+
+    // Return truncated description
     truncatedDescription(feature) {
       if (!feature) return '';
       if (!('showFull' in feature)) feature.showFull = false;
       return feature.showFull ? feature.description : feature.description.slice(0, 150);
     },
+
+    // Toggle full/truncated description
     toggleDescription(item) { item.showFull = !item.showFull; },
   },
+
+  // Lifecycle hook: fetch products when component mounts
   mounted() { this.fetchProducts(); },
 };
+
 </script>
 
 <style scoped>

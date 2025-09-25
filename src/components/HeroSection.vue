@@ -38,43 +38,54 @@
 
 <script>
 export default {
-  name: "HeroSection",
+  name: "HeroSection", // Component name
+
+  // Reactive data for hero section state
   data() {
     return {
-      welcomeMessage: "Welcome to BreezeMall Shopping!",
-      showAbout: false,
-      showContainer: false,
-      isVisible: false,
-      popClass: '',
-      toggling: false, // prevent rapid clicks
+      welcomeMessage: "Welcome to BreezeMall Shopping!", // Message displayed in hero section
+      showAbout: false,    // Tracks if the "About" info is visible
+      showContainer: false, // Controls initial container animation visibility
+      isVisible: false,     // Used to trigger pop-in/out animation
+      popClass: '',         // Stores the current pop animation class
+      toggling: false,      // Prevents rapid repeated clicks during animation
     };
   },
+
+  // Lifecycle hook: runs after component mounts
   mounted() {
-    // smoother initial animation using requestAnimationFrame
+    // Smoothly show container with requestAnimationFrame to trigger CSS transition
     requestAnimationFrame(() => {
       this.showContainer = true;
     });
   },
+
+  // Component methods
   methods: {
+    // Toggle the About section pop-in/out animation
     toggleAbout() {
-      if (this.toggling) return;
+      if (this.toggling) return; // Prevent new toggle while animation is running
       this.toggling = true;
 
       if (!this.showAbout) {
+        // Show About section with pop-in animation
         this.isVisible = true;
         this.popClass = 'pop-in';
-        setTimeout(() => { this.toggling = false; }, 400);
+        setTimeout(() => { this.toggling = false; }, 400); // Reset toggle lock after animation
       } else {
+        // Hide About section with pop-out animation
         this.popClass = 'pop-out';
         setTimeout(() => {
           this.isVisible = false;
-          this.toggling = false;
+          this.toggling = false; // Reset toggle lock after animation
         }, 400);
       }
-      this.showAbout = !this.showAbout;
+
+      this.showAbout = !this.showAbout; // Update state
     },
   },
 };
+
 </script>
 
 <style scoped>
