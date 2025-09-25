@@ -61,7 +61,6 @@ export default {
   methods: {
     toggleSidebar() {
       this.isSidebarOpen = !this.isSidebarOpen;
-      // Add Bootstrap body class for offcanvas
       document.body.classList.toggle("offcanvas-backdrop", this.isSidebarOpen);
     },
   },
@@ -77,17 +76,15 @@ export default {
   left: 0;
   z-index: 1000;
 }
-
 .logo {
   font-family: "Pacifico", cursive;
   color: var(--color-cream);
   font-size: 1.5rem;
 }
 .logo span {
+  font-family: "Pacifico", cursive;
   color: var(--color-deep-red);
 }
-
-/* Override Bootstrap offcanvas background */
 .offcanvas {
   background-color: var(--color-dark-gray);
   width: 250px;

@@ -1,16 +1,16 @@
 <template>
-  <section class="hero d-flex align-items-center position-relative">
+  <section class="hero d-flex align-items-center position-relative" role="region" aria-label="Hero Section">
     <!-- Bootstrap Carousel as Background -->
     <div id="heroCarousel" class="carousel slide carousel-fade position-absolute w-100 h-100" data-bs-ride="carousel">
       <div class="carousel-inner h-100">
         <div class="carousel-item active h-100">
-          <img src="@/assets/image1.jpg" class="d-block w-100 h-100 object-fit-cover" alt="Slide 1">
+          <img src="@/assets/image1.jpg" class="d-block w-100 h-100 object-fit-cover" loading="lazy" alt="BreezeMall storefront view">
         </div>
         <div class="carousel-item h-100">
-          <img src="@/assets/image2.jpg" class="d-block w-100 h-100 object-fit-cover" alt="Slide 2">
+          <img src="@/assets/image2.jpg" class="d-block w-100 h-100 object-fit-cover" loading="lazy" alt="Shopping interior with products">
         </div>
         <div class="carousel-item h-100">
-          <img src="@/assets/image3.jpg" class="d-block w-100 h-100 object-fit-cover" alt="Slide 3">
+          <img src="@/assets/image3.jpg" class="d-block w-100 h-100 object-fit-cover" loading="lazy" alt="Happy customers shopping at BreezeMall">
         </div>
       </div>
     </div>
@@ -19,17 +19,17 @@
     <div class="overlay"></div>
 
     <!-- Slide-in content -->
-    <div :class="['container text-start text-white slide-in-container', { show: showContainer }]">
-      <h2 class="fw-bold">{{ welcomeMessage }}</h2>
+    <div :class="['container text-white slide-in-container', { show: showContainer }]">
+      <h1 class="fw-bold text-center text-md-start">{{ welcomeMessage }}</h1>
 
       <!-- Pop container -->
       <div v-if="isVisible" :class="['mt-3', popClass]">
         <div class="card card-body bg-transparent border-0 p-0 text-white">
-          <p class="lead mb-0">Shopping made easy, living made breezy.</p>
+          <p class="lead mb-0 text-center text-md-start">Shopping made easy, living made breezy.</p>
         </div>
       </div>
 
-      <button class="btn pill-btn mt-3" @click="toggleAbout">
+      <button class="btn pill-btn mt-3 d-block mx-auto mx-md-0" @click="toggleAbout" :disabled="toggling">
         {{ showAbout ? "Hide" : "Learn More" }}
       </button>
     </div>
@@ -46,22 +46,29 @@ export default {
       showContainer: false,
       isVisible: false,
       popClass: '',
+      toggling: false, // prevent rapid clicks
     };
   },
   mounted() {
-    setTimeout(() => {
+    // smoother initial animation using requestAnimationFrame
+    requestAnimationFrame(() => {
       this.showContainer = true;
-    }, 100);
+    });
   },
   methods: {
     toggleAbout() {
+      if (this.toggling) return;
+      this.toggling = true;
+
       if (!this.showAbout) {
         this.isVisible = true;
         this.popClass = 'pop-in';
+        setTimeout(() => { this.toggling = false; }, 400);
       } else {
         this.popClass = 'pop-out';
         setTimeout(() => {
           this.isVisible = false;
+          this.toggling = false;
         }, 400);
       }
       this.showAbout = !this.showAbout;
@@ -75,16 +82,12 @@ export default {
   height: 100vh;
   overflow: hidden;
 }
-
-/* Dark overlay */
 .overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to right, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
   z-index: 1;
 }
-
-/* Ensure carousel stays in the back */
 .carousel,
 .carousel-inner,
 .carousel-item,
@@ -97,20 +100,20 @@ export default {
 .carousel-item img {
   object-fit: cover;
 }
-
-/* Foreground content */
 .slide-in-container {
   z-index: 2;
   transform: translateX(-100%);
   opacity: 0;
+  padding: 0 1rem; /* mobile padding */
   transition: transform 0.8s ease, opacity 0.8s ease;
+}
+@media (min-width: 768px) {
+  .slide-in-container { padding: 0; }
 }
 .slide-in-container.show {
   transform: translateX(0);
   opacity: 1;
 }
-
-/* Button styling */
 .pill-btn {
   background-color: var(--color-deep-red);
   color: var(--color-cream);
@@ -125,8 +128,6 @@ export default {
   transform: scale(1.05);
   color: var(--color-cream);
 }
-
-/* Pop animations */
 .pop-in {
   animation: popIn 0.4s forwards;
 }

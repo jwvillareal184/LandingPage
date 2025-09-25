@@ -1,11 +1,11 @@
 <template>
-  <section id="contact" class="py-5">
+  <section id="contact" class="py-5 min-vh-100 d-flex align-items-center">
     <div class="container">
       <div class="row">
         <!-- Contact Info Column -->
         <div class="col-md-5 mb-4 slide-left">
           <div class="contact-info p-4 h-100">
-            <h4 class="mb-3">Get in Touch</h4>
+            <h2 class="mb-3">Get in Touch</h2>
             <p><strong>Address:</strong> 123 Main St, Manila, Philippines</p>
             <p><strong>Email:</strong> info@mystore.com</p>
             <p><strong>Phone:</strong> +63 912 345 6789</p>
@@ -158,8 +158,8 @@ export default {
   },
   mounted() {
     const options = {
-      root: null, // viewport
-      threshold: 0.2, // 20% visible
+      root: null, 
+      threshold: 0.2, 
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -172,7 +172,6 @@ export default {
       });
     }, options);
 
-    // Observe both columns individually
     const left = this.$el.querySelector(".slide-left");
     const right = this.$el.querySelector(".slide-right");
     if (left) observer.observe(left);
