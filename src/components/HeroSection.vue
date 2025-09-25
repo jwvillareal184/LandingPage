@@ -80,7 +80,8 @@ export default {
 <style scoped>
 .hero {
   height: 100vh;
-  overflow: hidden;
+    overflow: hidden;
+  position: relative;
 }
 .overlay {
   position: absolute;
